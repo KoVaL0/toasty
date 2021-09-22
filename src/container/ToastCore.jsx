@@ -34,99 +34,102 @@ class _Toast {
     }
     _Toast.singleton = this
     this.toastList = toastList
+    this.showToast = this.showToast
   }
 
-  showToast(
-    toastType,
-    toastProperties,
-    toastPosition,
-    toastIsAutoDelete,
-    toastAutoDeleteTime,
-    animation,
-  ) {
-    const {
-      toastId,
-      title,
-      titleColor,
-      description,
-      backgroundColor,
-      icon,
-      padding,
-    } = toastProperties
+  getId() {
+    return Math.floor(Math.random() * 101 + 1)
+  }
 
-    const id = Math.floor(Math.random() * 101 + 1)
-
-    switch (toastType) {
+  getTitle(properties) { 
+    switch (properties.type) {
       case SUCCESS:
-        toastProperties = {
-          ...toastProperties,
-          id: toastId || id,
-          title: title || SUCCESS_TITLE,
-          titleColor: titleColor || WHITE,
-          description: description || "",
-          backgroundColor: backgroundColor || GREEN,
-          icon: icon || succsessIcon,
-          toastPadding: padding,
-        }
-        break
+        return SUCCESS_TITLE;
       case ERROR:
-        toastProperties = {
-          ...toastProperties,
-          id: toastId || id,
-          title: title || ERROR_TITLE,
-          titleColor: titleColor || WHITE,
-          description: description || "",
-          backgroundColor: backgroundColor || RED,
-          icon: icon || errorIcon,
-          toastPadding: padding,
-        }
-        break
+        return ERROR_TITLE;
       case INFO:
-        toastProperties = {
-          ...toastProperties,
-          id: toastId || id,
-          title: title || INFO_TITLE,
-          titleColor: titleColor || WHITE,
-          description: description || "",
-          backgroundColor: backgroundColor || PURPLE,
-          icon: icon || infoIcon,
-          toastPadding: padding,
-        }
-        break
+        return INFO_TITLE;
       case WARNING:
-        toastProperties = {
-          ...toastProperties,
-          id: toastId || id,
-          title: title || WARNING_TITLE,
-          titleColor: titleColor || BLACK,
-          description: description || "",
-          backgroundColor: backgroundColor || YELOW,
-          icon: icon || warningIcon,
-          toastPadding: padding,
-        }
-        break
+        return WARNING_TITLE;
       default:
-        toastProperties = {
-          ...toastProperties,
-          id: toastId || id,
-          title: title || CUSTOM_TITLE,
-          titleColor: titleColor || BLACK,
-          description: description || "",
-          backgroundColor: backgroundColor || GREY,
-          icon: icon || succsessIcon,
-          toastPadding: padding,
-        }
+        return CUSTOM_TITLE;
     }
-    if (toastList.length < 3) toastList = [...toastList, toastProperties]
+  }
+
+  getTitleColor(properties) {
+    switch (properties.type) {
+      case SUCCESS:
+        return WHITE;
+      case ERROR:
+        return WHITE;
+      case INFO:
+        return WHITE;
+      case WARNING:
+        return BLACK;
+      default:
+        return BLACK;
+    }
+  }
+
+  getBackgroundColor(properties) {
+    switch (properties.type) {
+      case SUCCESS:
+        return GREEN;
+        break;
+      case ERROR:
+        return RED;
+        break;
+      case INFO:
+        return PURPLE;
+        break;
+      case WARNING:
+        return YELOW;
+        break;
+      default:
+        return GREEN;
+        break;
+    }
+  }
+
+  getIcon(properties) {
+    switch (properties.type) {
+      case SUCCESS:
+        return succsessIcon;
+      case ERROR:
+        return errorIcon;
+      case INFO:
+        return infoIcon;
+      case WARNING:
+        return warningIcon;
+      default:
+        return succsessIcon;
+    }
+  }
+
+  getProperty(description, properties) {
+    return {
+      ...properties,
+      id: properties.toastId || this.getId(),
+      description: description || 'Message!',
+      toastPadding: properties.padding || '',
+      title: this.getTitle(properties),
+      titleColor: this.getTitleColor(properties),
+      backgroundColor: this.getBackgroundColor(properties),
+      icon: this.getIcon(properties),
+    }
+  }
+
+  showToast(description, properties) {
+    if (toastList.length < 3) toastList = [...toastList, this.getProperty(description, properties)]
 
     return (
       <ToastContainer>
         <Toast
           toastList={toastList}
-          position={toastPosition}
-          autoDelete={toastIsAutoDelete}
-          autoDeleteTime={toastAutoDeleteTime}
-          animation={animation}
+          position={properties.position}
+          autoDelete={properties.autoDelete}
+          autoDeleteTime={properties.delay}
+          animation={properties.animation}
         />
       </ToastContainer>
     )
